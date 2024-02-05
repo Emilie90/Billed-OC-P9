@@ -50,7 +50,7 @@ describe("Given I am connected as an employee", () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
-      // on vient importer notre mock local storage d'employé
+      // Importation du mock localstorage d'employé
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
@@ -60,7 +60,7 @@ describe("Given I am connected as an employee", () => {
           type: "Employee",
         })
       );
-      //  on crée un nouveau container pour les factures
+      //  Création d'un nouveau container pour les factures
       const billsContainer = new Bills({
         document,
         onNavigate,
@@ -68,15 +68,15 @@ describe("Given I am connected as an employee", () => {
         localStorage: null,
       });
 
-      document.body.innerHTML = BillsUI({ data: bills }); // on rempli le form avec des données mock
+      document.body.innerHTML = BillsUI({ data: bills }); // Rempli le form avec des données mock
       const handleClickButton = jest.fn((e) =>
         billsContainer.handleClickNewBill()
-      ); // on click sur le bouton
+      ); // Click sur le bouton
       const newBillButton = screen.getByTestId("btn-new-bill");
-      newBillButton.addEventListener("click", handleClickButton); // on écoute le click du bouton pour créer une facture
+      newBillButton.addEventListener("click", handleClickButton); // Ecoute le click du bouton pour créer une facture
       userEvent.click(newBillButton);
-      expect(handleClickButton).toHaveBeenCalled(); // on s'attends à ce que le boutton soit appelé
-      expect(screen.getByTestId("form-new-bill")).toBeTruthy(); // on s''attends à une valeur "vraie" quand l'id "form-new-bill" est affiché
+      expect(handleClickButton).toHaveBeenCalled(); // S'attends à ce que le boutton soit appelé
+      expect(screen.getByTestId("form-new-bill")).toBeTruthy(); // S'attends à une valeur "vraie" quand l'id "form-new-bill" est affiché
     });
   });
 

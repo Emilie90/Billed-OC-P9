@@ -14,7 +14,7 @@ jest.mock("../app/store", () => mockStore);
 
 describe("Given I am connected as an employee", () => {
   beforeEach(() => {
-    // set up the mock localStorage and mock user for the test
+    // Configuration du localStorage avec un utilisateur connecté avant chaque test
     Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
     window.localStorage.setItem(
@@ -28,22 +28,24 @@ describe("Given I am connected as an employee", () => {
 
   describe("When I am on NewBill Page", () => {
     test("then mail icon in vertical layout should be highlighted", async () => {
-      // creation of the root element
+      // Création de l'élement root
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
 
-      // load to the new bill page using the router
+      // Chargement de la page NewBill via le routeur
       router();
       window.onNavigate(ROUTES_PATH.NewBill);
 
-      // wait for the mail icon to be displayed and check that it is active
+      // Attente de l'affichage de l'icône de mail et vérification qu'elle est active
       await waitFor(() => screen.getByTestId("icon-mail"));
       const mailIcon = screen.getByTestId("icon-mail");
 
       expect(mailIcon.classList).toContain("active-icon");
     });
     test("Then the form should be displayed", () => {
+      // Vérification que le formulaire est correctement affiché
+
       const html = NewBillUI();
       document.body.innerHTML = html;
       expect(screen.getByTestId("form-new-bill")).toBeTruthy();
@@ -63,7 +65,7 @@ describe("Given I am connected as an employee", () => {
     let newBill;
 
     beforeEach(() => {
-      // set up the new bill
+      // Mise en place de la page NewBill avant chaque test
       document.body.innerHTML = NewBillUI();
 
       const onNavigate = (pathname) => {
@@ -82,7 +84,8 @@ describe("Given I am connected as an employee", () => {
       let handleChangeFile;
 
       beforeEach(() => {
-        // create the handleChangeFile mocked function
+        // Création de la fonction handleChangeFile simulée pour chaque test
+
         handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
       });
       test("right file should be selected", async () => {
@@ -100,7 +103,7 @@ describe("Given I am connected as an employee", () => {
         // check that the file name is displayed
         expect(screen.getByTestId("file").files[0].name).toBe("test.jpg");
 
-        // caheck that handleChangeFile is called
+        // check that handleChangeFile is called
         expect(handleChangeFile).toHaveBeenCalled();
 
         // check formdata values
@@ -108,7 +111,8 @@ describe("Given I am connected as an employee", () => {
       });
 
       test("a file should be selected", async () => {
-        // Create a mock event object with a selected file
+        // Mise en place du test pour vérifier la sélection du bon fichier
+        // et l'appel de la fonction handleChangeFile
         const mockEvent = {
           preventDefault: jest.fn(),
           target: {
@@ -146,7 +150,7 @@ describe("Given I am connected as an employee", () => {
         // check that the file name is displayed
         expect(screen.getByTestId("file").files[0].name).toBe("test.jpg");
 
-        // caheck that handleChangeFile is called
+        // check that handleChangeFile is called
         expect(handleChangeFile).toHaveBeenCalled();
 
         // check formdata values
@@ -241,7 +245,7 @@ describe("Given I am connected as an employee", () => {
         form.addEventListener("submit", handleSubmit); // écoute la fonction au submit
         fireEvent.submit(form); // lance l'évènement submit
 
-        expect(handleSubmit).toHaveBeenCalled(); // on s'attend à ce que la fonction submit ait été appellée
+        expect(handleSubmit).toHaveBeenCalled(); // S'attend à ce que la fonction submit ait été appellée
 
         expect(mockOnNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"]);
       });
