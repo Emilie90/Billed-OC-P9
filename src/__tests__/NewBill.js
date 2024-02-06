@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
-import { ROUTES, ROUTES_PATH } from "../constants/routes";
+import { ROUTES_PATH } from "../constants/routes";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store.js";
 import router from "../app/Router.js";
@@ -13,8 +13,8 @@ import router from "../app/Router.js";
 jest.mock("../app/store", () => mockStore);
 
 describe("Given I am connected as an employee", () => {
+  // Utilitaire pour configurer le localStorage avant chaque test
   beforeEach(() => {
-    // Configuration du localStorage avec un utilisateur connecté avant chaque test
     Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
     window.localStorage.setItem(
@@ -27,37 +27,36 @@ describe("Given I am connected as an employee", () => {
   });
 
   describe("When I am on NewBill Page", () => {
+    // Test pour vérifier si l'icône de mail est activée sur la page NewBill
     test("then mail icon in vertical layout should be highlighted", async () => {
-      // Création de l'élement root
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
 
-      // Chargement de la page NewBill via le routeur
       router();
       window.onNavigate(ROUTES_PATH.NewBill);
 
-      // Attente de l'affichage de l'icône de mail et vérification qu'elle est active
       await waitFor(() => screen.getByTestId("icon-mail"));
       const mailIcon = screen.getByTestId("icon-mail");
 
       expect(mailIcon.classList).toContain("active-icon");
     });
-    test("Then the form should be displayed", () => {
-      // Vérification que le formulaire est correctement affiché
 
+    // Test pour vérifier si le formulaire est correctement affiché
+    test("Then the form should be displayed", () => {
       const html = NewBillUI();
       document.body.innerHTML = html;
-      expect(screen.getByTestId("form-new-bill")).toBeTruthy();
-      expect(screen.getByTestId("expense-type")).toBeTruthy();
-      expect(screen.getByTestId("expense-name")).toBeTruthy();
-      expect(screen.getByTestId("datepicker")).toBeTruthy();
-      expect(screen.getByTestId("amount")).toBeTruthy();
-      expect(screen.getByTestId("vat")).toBeTruthy();
-      expect(screen.getByTestId("pct")).toBeTruthy();
-      expect(screen.getByTestId("commentary")).toBeTruthy();
-      expect(screen.getByTestId("file")).toBeTruthy();
-      expect(screen.getByRole("button")).toBeTruthy();
+
+      expect(screen.getByTestId("form-new-bill")).toBeInTheDocument();
+      expect(screen.getByTestId("expense-type")).toBeInTheDocument();
+      expect(screen.getByTestId("expense-name")).toBeInTheDocument();
+      expect(screen.getByTestId("datepicker")).toBeInTheDocument();
+      expect(screen.getByTestId("amount")).toBeInTheDocument();
+      expect(screen.getByTestId("vat")).toBeInTheDocument();
+      expect(screen.getByTestId("pct")).toBeInTheDocument();
+      expect(screen.getByTestId("commentary")).toBeInTheDocument();
+      expect(screen.getByTestId("file")).toBeInTheDocument();
+      expect(screen.getByRole("button")).toBeInTheDocument();
     });
   });
 
@@ -65,7 +64,6 @@ describe("Given I am connected as an employee", () => {
     let newBill;
 
     beforeEach(() => {
-      // Mise en place de la page NewBill avant chaque test
       document.body.innerHTML = NewBillUI();
 
       const onNavigate = (pathname) => {
@@ -84,10 +82,10 @@ describe("Given I am connected as an employee", () => {
       let handleChangeFile;
 
       beforeEach(() => {
-        // Création de la fonction handleChangeFile simulée pour chaque test
-
         handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
       });
+
+      // Test pour vérifier si le bon fichier est sélectionné
       test("right file should be selected", async () => {
         await waitFor(() => screen.getByTestId("file"));
         const inputFile = screen.getByTestId("file");
@@ -100,103 +98,80 @@ describe("Given I am connected as an employee", () => {
           },
         });
 
-        // check that the file name is displayed
         expect(screen.getByTestId("file").files[0].name).toBe("test.jpg");
-
-        // check that handleChangeFile is called
         expect(handleChangeFile).toHaveBeenCalled();
-
-        // check formdata values
         expect(inputFile.files[0]).toEqual(testFile);
       });
 
+      // Test pour vérifier la sélection d'un fichier
       test("a file should be selected", async () => {
-        // Mise en place du test pour vérifier la sélection du bon fichier
-        // et l'appel de la fonction handleChangeFile
         const mockEvent = {
           preventDefault: jest.fn(),
           target: {
-            value: "fakepath\\fakefile.jpg", // Simulated file path
+            value: "fakepath\\fakefile.jpg",
             files: [
-              new File(["fileContent"], "fakefile.jpg", { type: "image/jpeg" }), // Simulated file object
+              new File(["fileContent"], "fakefile.jpg", { type: "image/jpeg" }),
             ],
           },
         };
 
-        // Call handleChangeFile with the mock event
         handleChangeFile(mockEvent);
 
-        // Assert that the function detects the selected file
         expect(handleChangeFile).toHaveBeenCalled();
       });
 
+      // Test pour vérifier que l'événement handleChangeFile est déclenché
       test("then handleChangeFile should be triggered ", async () => {
-        // get the input file element and add the event listener
         await waitFor(() => screen.getByTestId("file"));
         const inputFile = screen.getByTestId("file");
 
         inputFile.addEventListener("change", handleChangeFile);
 
-        // creation of the test file to upload
         const testFile = new File(["test"], "test.jpg", { type: "image/jpg" });
 
-        // simulate the file upload
         fireEvent.change(inputFile, {
           target: {
             files: [testFile],
           },
         });
 
-        // check that the file name is displayed
         expect(screen.getByTestId("file").files[0].name).toBe("test.jpg");
-
-        // check that handleChangeFile is called
         expect(handleChangeFile).toHaveBeenCalled();
-
-        // check formdata values
         expect(inputFile.files[0]).toEqual(testFile);
       });
 
+      // Test pour vérifier si le téléchargement d'un mauvais fichier déclenche une erreur
       test("then upload a wrong file should trigger an error", async () => {
-        // get the input file element and add the event listener
-        await waitFor(() => screen.getByTestId("file"));
         const inputFile = screen.getByTestId("file");
 
         inputFile.addEventListener("change", handleChangeFile);
 
-        // creation of the test file to upload
         const testFile = new File(["test"], "test.pdf", {
           type: "document/pdf",
         });
 
-        // spy the console
         const errorSpy = jest.spyOn(console, "error");
 
-        // simulate the file upload
         fireEvent.change(inputFile, {
           target: {
             files: [testFile],
           },
         });
 
-        // check that the error message is displayed in the console
         expect(errorSpy).toHaveBeenCalledWith("Invalid file extension");
       });
     });
 
-    // POST integration test
-
     describe("When I click on the submit button", () => {
+      // Test pour vérifier la création d'une nouvelle facture
       test("then it should create a new bill", async () => {
-        let mockOnNavigate;
         const html = NewBillUI();
         document.body.innerHTML = html;
-        // Mock localStorage
+
         const mockLocalStorage = {
           getItem: jest.fn(() => JSON.stringify({ email: "test@example.com" })),
         };
 
-        // Mock store
         const mockStore = {
           bills: jest.fn(() => ({
             create: jest.fn(() => Promise.resolve()),
@@ -206,8 +181,8 @@ describe("Given I am connected as an employee", () => {
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
-        mockOnNavigate = jest.fn();
-        // Create a new instance of NewBill
+        const mockOnNavigate = jest.fn();
+
         const newBill = new NewBill({
           document,
           onNavigate: mockOnNavigate,
@@ -227,7 +202,6 @@ describe("Given I am connected as an employee", () => {
           fileName: "image.jpg",
         };
 
-        // charge les données dans les champs correspondants
         screen.getByTestId("expense-type").value = sampleBill.type;
         screen.getByTestId("expense-name").value = sampleBill.name;
         screen.getByTestId("datepicker").value = sampleBill.date;
@@ -237,16 +211,14 @@ describe("Given I am connected as an employee", () => {
         screen.getByTestId("commentary").value = sampleBill.commentary;
         newBill.fileName = sampleBill.fileName;
 
-        // Assertions
-        newBill.updateBill = jest.fn(); // crée fonction d'update
-        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e)); // crée fonction de submit
+        newBill.updateBill = jest.fn();
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
 
-        const form = screen.getByTestId("form-new-bill"); // récupère le formulaire
-        form.addEventListener("submit", handleSubmit); // écoute la fonction au submit
-        fireEvent.submit(form); // lance l'évènement submit
+        const form = screen.getByTestId("form-new-bill");
+        form.addEventListener("submit", handleSubmit);
+        fireEvent.submit(form);
 
-        expect(handleSubmit).toHaveBeenCalled(); // S'attend à ce que la fonction submit ait été appellée
-
+        expect(handleSubmit).toHaveBeenCalled();
         expect(mockOnNavigate).toHaveBeenCalledWith(ROUTES_PATH["Bills"]);
       });
     });
