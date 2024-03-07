@@ -67,16 +67,19 @@ describe("Given I am connected as an employee", () => {
         store: mockStore,
         localStorage: null,
       });
-
-      document.body.innerHTML = BillsUI({ data: bills }); // Rempli le form avec des données mock
+      // Rempli le form avec des données mock
+      document.body.innerHTML = BillsUI({ data: bills });
       const handleClickButton = jest.fn((e) =>
         billsContainer.handleClickNewBill()
       ); // Click sur le bouton
       const newBillButton = screen.getByTestId("btn-new-bill");
-      newBillButton.addEventListener("click", handleClickButton); // Ecoute le click du bouton pour créer une facture
+      // Ecoute le click du bouton pour créer une facture
+      newBillButton.addEventListener("click", handleClickButton);
       userEvent.click(newBillButton);
-      expect(handleClickButton).toHaveBeenCalled(); // S'attends à ce que le boutton soit appelé
-      expect(screen.getByTestId("form-new-bill")).toBeTruthy(); // S'attends à une valeur "vraie" quand l'id "form-new-bill" est affiché
+      // S'attends à ce que le boutton soit appelé
+      expect(handleClickButton).toHaveBeenCalled();
+      // S'attends à une valeur "vraie" quand l'id "form-new-bill" est affiché
+      expect(screen.getByTestId("form-new-bill")).toBeTruthy();
     });
   });
 

@@ -153,23 +153,22 @@ export default class {
       $(`#status-bills-container${this.index}`).html("");
       this.counter++;
     }
-    $(`.bill-card`).off("click");
+
+    // bills.forEach((bill) => {
+    //   $(`#open-bill${bill.id}`).click((e) =>
+    //     this.handleEditTicket(e, bill, bills)
+    //   );
+    // });
+
     bills.forEach((bill) => {
-      $(`#open-bill${bill.id}`).click((e) =>
-        this.handleEditTicket(e, bill, bills)
-      );
+      $(`#open-bill${bill.id}`)
+        .off("click")
+        .on("click", (e) => this.handleEditTicket(e, bill, bills));
     });
 
     return bills;
   }
 
-  //   bills.forEach(bill => {
-  //     $(`#status-bills-container${index} #open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-  //   })
-
-  //   return bills
-
-  // }
   getBillsAllUsers = () => {
     if (this.store) {
       return this.store
