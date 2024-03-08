@@ -270,9 +270,5 @@ describe("Given I am connected as an employee", () => {
         expect(message).toBeTruthy();
       });
     });
-
-    describe("When I submit a completed form", () => {
-      test("Then a new bill should be created", () => {});
-    });
   });
 });
